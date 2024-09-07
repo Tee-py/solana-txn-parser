@@ -1,13 +1,13 @@
-import { ParsedTransaction, ParsedTransactionWithMeta } from "@solana/web3.js";
+import { ParsedTransaction, ParsedTransactionWithMeta } from '@solana/web3.js';
 
 export type BaseParsedAction = {
-    type: string
-}
+    type: string;
+};
 
 export type BaseParsedTransaction<T extends BaseParsedAction> = {
     platform: string;
-    actions: T[]
-}
+    actions: T[];
+};
 
 export interface BaseParser<T extends BaseParsedTransaction<BaseParsedAction>> {
     parse(transaction: ParsedTransactionWithMeta): T | null;
