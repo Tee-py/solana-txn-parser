@@ -1,0 +1,18 @@
+{
+  "name": "sol-parser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@noble/hashes": "^1.5.0",
+    "@solana/web3.js": "^1.95.3",
+    "bs58": "^6.0.0"
+  }
+}
