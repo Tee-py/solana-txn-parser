@@ -16,7 +16,7 @@ npm install git+https://github.com/Tee-py/solana-txn-parser.git
 
 ## 👨🏽‍💻 Usage
 
-### PumpFun Parser
+### ▶️ PumpFun Parser
 
 ```typescript
 import { PumpFunParser } from 'solana-txn-parser';
@@ -44,11 +44,35 @@ const txn = JSON.parse(fs.readFileSync("<file_path>", "utf-8")) as unknown as Pa
 const pumpTxn = parser.parse(txn)
 ```
 
-### Raydium Parser [Comming soon]
+#### Output Structure
 
-### Jupiter Parser [Coming soon]
+The parser returns a `PumpFunTransaction` object (or an array of `PumpFunTransaction` objects if `parseMultiple` is called):
 
-### Creating Custom Parsers
+```typescript
+interface PumpFunTransaction extends BaseParsedTransaction<PumpFunAction> {
+    actions: PumpFunAction[];
+}
+
+type TradeInfo = {
+    solAmount: bigint;    // Amount of SOL involved in the trade
+    tokenAmount: bigint;  // Amount of tokens involved in the trade
+    tokenMint: PublicKey; // Public key of the token mint
+    traderTokenAccount: PublicKey; // Trader's associated token account
+    trader: PublicKey;    // Public key of the trader
+};
+
+interface PumpFunAction extends BaseParsedAction {
+    info: TradeInfo;
+}
+```
+
+Each `PumpFunTransaction` contains an array of `PumpFunAction`s, representing the trades made in the transaction. The `TradeInfo` provides detailed information about each trade, including the amounts of SOL and tokens involved, and relevant public keys.
+
+### ▶️ Raydium Parser [Comming soon]
+
+### ▶️ Jupiter Parser [Coming soon]
+
+### ▶️ Creating Custom Parsers
 
 You can create custom parsers for other DeFi platforms by extending the `BaseParser` class:
 
@@ -97,6 +121,6 @@ You can check the parser directory for more information on how to implement your
 
 For all contributions, please ensure your code passes all existing tests. You can also help in improving the tests for the existing parsers. 
 
-## License
+## 🗂️ License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
