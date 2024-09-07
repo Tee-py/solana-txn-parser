@@ -35,11 +35,7 @@ export class PumpFunParser implements BaseParser<PumpFunTransaction> {
     }
 
     parseMultiple(transactions: ParsedTransactionWithMeta[]): PumpFunTransaction[] {
-        const results = [];
-        for (const txn of transactions) {
-            results.push(this.parse(txn));
-        }
-        return results;
+        return transactions.map((txn) => this.parse(txn));
     }
 
     getTradeAction(
