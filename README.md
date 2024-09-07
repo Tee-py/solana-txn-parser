@@ -79,17 +79,29 @@ You can create custom parsers for other DeFi platforms by extending the `BasePar
 ```typescript
 import { BaseParser, ParsedTransactionWithMeta } from 'solana-txn-parser';
 
-interface CustomTransaction {
-  // Define your custom transaction structure
+// define action information
+type ActionInfo = {
+    // add neccessary fields for the action
+};
+
+// define your custom action
+interface CustomAction extends BaseParsedAction {
+    info: ActionInfo;
 }
 
+// define your custom transaction
+interface CustomTransaction extends BaseParsedTransaction<CustomAction> {
+    actions: CustomAction[];
+}
+
+// define your parser class
 class CustomParser extends BaseParser<CustomTransaction> {
   parse(transaction: ParsedTransactionWithMeta): CustomTransaction {
     // Implement your parsing logic here
   }
 
   parseMultiple(transactions: ParsedTransactionWithMeta[]): CustomTransaction[] {
-    return transactions.map(tx => this.parse(tx));
+    return transactions.map((tx) => this.parse(tx));
   }
 }
 ```
