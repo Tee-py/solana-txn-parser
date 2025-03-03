@@ -85,47 +85,23 @@ export class RaydiumV4Parser implements AsyncBaseParser<RaydiumV4Transaction> {
         const user = instruction.accounts[instruction.accounts.length - 1];
         const poolInfo = await this.getPoolInfo(poolId.toString());
         if (!poolInfo) return null;
-        switch (parsedLog.logType) {
-            case SWAP_BASE_IN_LOG_TYPE:
-                return {
-                    type: ActionType.SWAP,
-                    info: {
-                        amountIn: parsedLog.amountIn,
-                        amountOut: parsedLog.amountOut,
-                        baseReserve: parsedLog.baseReserve,
-                        quoteReserve: parsedLog.quoteReserve,
-                        tokenIn: parsedLog.direction == 1n ? poolInfo.quoteMint : poolInfo.baseMint,
-                        tokenInDecimal:
-                            parsedLog.direction == 1n
-                                ? poolInfo.quoteDecimal
-                                : poolInfo.baseDecimal,
-                        tokenOut:
-                            parsedLog.direction == 1n ? poolInfo.baseMint : poolInfo.quoteMint,
-                        tokenOutDecimal:
-                            parsedLog.direction == 1n
-                                ? poolInfo.baseDecimal
-                                : poolInfo.quoteDecimal,
-                        user,
-                        poolId,
-                    },
-                };
-            default:
-                return {
-                    type: ActionType.SWAP,
-                    info: {
-                        amountIn: parsedLog.amountIn,
-                        amountOut: parsedLog.amountOut,
-                        baseReserve: parsedLog.baseReserve,
-                        quoteReserve: parsedLog.quoteReserve,
-                        tokenIn: poolInfo.quoteMint,
-                        tokenInDecimal: poolInfo.quoteDecimal,
-                        tokenOut: poolInfo.baseMint,
-                        tokenOutDecimal: poolInfo.baseDecimal,
-                        user,
-                        poolId,
-                    },
-                };
-        }
+        return {
+            type: ActionType.SWAP,
+            info: {
+                amountIn: parsedLog.amountIn,
+                amountOut: parsedLog.amountOut,
+                baseReserve: parsedLog.baseReserve,
+                quoteReserve: parsedLog.quoteReserve,
+                tokenIn: parsedLog.direction == 1n ? poolInfo.quoteMint : poolInfo.baseMint,
+                tokenInDecimal:
+                    parsedLog.direction == 1n ? poolInfo.quoteDecimal : poolInfo.baseDecimal,
+                tokenOut: parsedLog.direction == 1n ? poolInfo.baseMint : poolInfo.quoteMint,
+                tokenOutDecimal:
+                    parsedLog.direction == 1n ? poolInfo.baseDecimal : poolInfo.quoteDecimal,
+                user,
+                poolId,
+            },
+        };
     }
 
     private handleCreatePool(parsedLog: InitPool, instruction: { accounts: PublicKey[] }) {

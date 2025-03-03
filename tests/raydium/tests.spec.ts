@@ -24,7 +24,7 @@ describe('Raydium Parser', () => {
     const removeLiquidityTransaction = JSON.parse(
         fs.readFileSync('tests/raydium/parsed-withdraw-txn.json', 'utf-8')
     ) as unknown as ParsedTransactionWithMeta;
-    const connection = new Connection(clusterApiUrl("mainnet-beta"));
+    const connection = new Connection(clusterApiUrl('mainnet-beta'));
     const parser = new RaydiumV4Parser(connection, { maxPoolCache: 100 });
 
     test('parse should correctly identify swap action [base in]', async () => {
@@ -171,7 +171,7 @@ describe('Raydium Parser', () => {
         const txn2 = JSON.parse(
             fs.readFileSync('tests/raydium/swap-edge-2.json', 'utf-8')
         ) as unknown as ParsedTransactionWithMeta;
-        const parsed = await parser.parseMultiple([txn1!, txn2!])
+        const parsed = await parser.parseMultiple([txn1!, txn2!]);
 
         // checks for the first
         expect((parsed || [])[0].platform).toEqual('raydiumv4');
