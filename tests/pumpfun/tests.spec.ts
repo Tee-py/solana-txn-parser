@@ -143,7 +143,7 @@ describe('PumpFunParser', () => {
             {
                 tokenMint: 'B9ktH3g7mwgdoDgCgGRim6qeqPcyRVWJueXS12CMpump',
                 bondingCurve: '5dhRAEw3LfUMTJcPqYSyasH45jHnWeZQmM2Hccic59SZ',
-                user: 'niggerd597QYedtvjQDVHZTCCGyJrwHNm2i49dkm5zS',
+                user: 'd597QYedtvjQDVHZTCCGyJrwHNm2i49dkm5zS',
                 timestamp: '1738104027',
             },
         ];
