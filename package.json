@@ -13,7 +13,7 @@
     "build": "npm run clean && tsc && rm tsconfig.tsbuildinfo",
     "build:types": "tsc --emitDeclarationOnly",
     "test": "jest",
-    "format": "prettier --write \"src/**/*.ts\" && prettier --write \"tests/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" && prettier --write \"tests/**/*.ts\" && prettier --write \"tests/**/*.json\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "check:types": "tsc --noEmit"
   },

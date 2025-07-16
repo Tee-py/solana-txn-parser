@@ -1,0 +1,100 @@
+{
+    "blockTime": 1741560026,
+    "meta": {
+        "computeUnitsConsumed": 9288,
+        "err": null,
+        "fee": 2510000,
+        "innerInstructions": [],
+        "loadedAddresses": { "readonly": [], "writable": [] },
+        "logMessages": [
+            "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+            "Program ComputeBudget111111111111111111111111111111 success",
+            "Program ComputeBudget111111111111111111111111111111 invoke [1]",
+            "Program ComputeBudget111111111111111111111111111111 success",
+            "Program 11111111111111111111111111111111 invoke [1]",
+            "Program 11111111111111111111111111111111 success",
+            "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [1]",
+            "Program log: CreateIdempotent",
+            "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 8838 of 49550 compute units",
+            "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success"
+        ],
+        "postBalances": [352042692902, 6111714828, 2039280, 1, 1, 934087680, 46117302, 731913600],
+        "postTokenBalances": [
+            {
+                "accountIndex": 2,
+                "mint": "vXKyv7pBNrYih3R4qp4HEr5tRksLSUHBGccTh1gpump",
+                "owner": "autr6ZDuwJ695TVWXRjv8Ad4T9iKMDvLWHJLU6g1v7P",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                    "amount": "4873395986",
+                    "decimals": 6,
+                    "uiAmount": 4873.395986,
+                    "uiAmountString": "4873.395986"
+                }
+            }
+        ],
+        "preBalances": [358156917730, 0, 2039280, 1, 1, 934087680, 46117302, 731913600],
+        "preTokenBalances": [
+            {
+                "accountIndex": 2,
+                "mint": "vXKyv7pBNrYih3R4qp4HEr5tRksLSUHBGccTh1gpump",
+                "owner": "autr6ZDuwJ695TVWXRjv8Ad4T9iKMDvLWHJLU6g1v7P",
+                "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "uiTokenAmount": {
+                    "amount": "4873395986",
+                    "decimals": 6,
+                    "uiAmount": 4873.395986,
+                    "uiAmountString": "4873.395986"
+                }
+            }
+        ],
+        "rewards": [],
+        "status": { "Ok": null }
+    },
+    "slot": 325705242,
+    "transaction": {
+        "message": {
+            "accountKeys": [
+                "autr6ZDuwJ695TVWXRjv8Ad4T9iKMDvLWHJLU6g1v7P",
+                "5DyQTEcjJE9JLzXZb71KMHZxHWrqCEDBLZKx6YYNjAvH",
+                "DMbwwE7sCdFXsNx9m2sZHuzoi3afZgTcKSLbibVZ82bv",
+                "11111111111111111111111111111111",
+                "ComputeBudget111111111111111111111111111111",
+                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                "vXKyv7pBNrYih3R4qp4HEr5tRksLSUHBGccTh1gpump",
+                "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            ],
+            "header": {
+                "numReadonlySignedAccounts": 0,
+                "numReadonlyUnsignedAccounts": 5,
+                "numRequiredSignatures": 2
+            },
+            "instructions": [
+                {
+                    "accounts": [],
+                    "data": "3b2TMHxMePoM",
+                    "programIdIndex": 4,
+                    "stackHeight": null
+                },
+                { "accounts": [], "data": "G9oAjh", "programIdIndex": 4, "stackHeight": null },
+                {
+                    "accounts": [0, 1],
+                    "data": "1111TKFNiYzhKUfa1TWnL6uNH7Jb8Fypr6DaqYsJaW6JhjEghwpFBSEdJoJPPVmMMcPWX",
+                    "programIdIndex": 3,
+                    "stackHeight": null
+                },
+                {
+                    "accounts": [0, 2, 0, 6, 3, 5],
+                    "data": "2",
+                    "programIdIndex": 7,
+                    "stackHeight": null
+                }
+            ],
+            "recentBlockhash": "EKAaW9oPorKmH9mHECUzdT4eur1gwW8FXaa357rqwi4p"
+        },
+        "signatures": [
+            "2ZnX5cpqftXUbSZDzANTAvErgVESAW9FtY6NDLiZxbZ2Av8whxr3c8dmAmVtmQbnN3YHjcVFviEJXct5ve7QYLRb",
+            "2i9XFJ29B9dgB3dCbEUfcuU6gCx8V3cxNSEoQUTkSHV6VDxw2a6zsyae992umGo9DY9nfLMnLitUiK9ebR59vTYD"
+        ]
+    }
+}

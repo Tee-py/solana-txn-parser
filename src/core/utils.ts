@@ -1,4 +1,5 @@
 import {
+    Message,
     ParsedInstruction,
     ParsedTransactionWithMeta,
     PartiallyDecodedInstruction,
@@ -100,4 +101,70 @@ export const getSOLTransfers = (
             // @ts-ignore
             ix.parsed.type == 'transfer'
     );
+};
+
+export const parseRawTransaction = (txn: any) => {
+    const txnMessage = txn.transaction.message;
+    const staticAccounts = txnMessage.staticAccountKeys || [];
+    const loadedAddresses = txn.meta?.loadedAddresses;
+    const allAccounts =
+        txn.version == 0
+            ? [
+                  ...staticAccounts,
+                  ...(loadedAddresses?.writable || []),
+                  ...(loadedAddresses?.readonly || []),
+              ]
+            : (txn.transaction.message as Message).accountKeys;
+    const parsedInnerInstructions = txn?.meta?.innerInstructions?.map((ix: any) => {
+        return {
+            index: ix.index,
+            instructions: ix.instructions.map((cIx: any) => {
+                let accounts;
+                if (Array.isArray(cIx.accounts)) {
+                    accounts = cIx.accounts.map((idx: number) => allAccounts[idx]);
+                } else if (cIx.accounts instanceof Object) {
+                    accounts = cIx.accounts.data.map((idx: number) => allAccounts[idx]);
+                } else {
+                    accounts = [];
+                }
+                return {
+                    programId: allAccounts[cIx.programIdIndex],
+                    accounts: accounts,
+                    data: cIx.data,
+                };
+            }),
+        };
+    });
+    let parsedInstructions;
+    if (txn.version === 0) {
+        parsedInstructions = txn?.transaction.message.compiledInstructions.map((cIx: any) => {
+            return {
+                programId: allAccounts[cIx.programIdIndex],
+                data: cIx.data,
+                accounts: cIx.accountKeyIndexes.map((idx: any) => allAccounts[idx]),
+            };
+        });
+    } else {
+        parsedInstructions = txn?.transaction.message.instructions.map((cIx: any) => {
+            return {
+                programId: allAccounts[cIx.programIdIndex],
+                data: cIx.data,
+                accounts: cIx.accounts.map((idx: any) => allAccounts[idx]),
+            };
+        });
+    }
+    return {
+        ...txn,
+        meta: {
+            ...txn.meta,
+            innerInstructions: parsedInnerInstructions,
+        },
+        transaction: {
+            ...txn.transaction,
+            message: {
+                ...txn.transaction.message,
+                instructions: parsedInstructions,
+            },
+        },
+    };
 };
