@@ -174,6 +174,8 @@ describe('Transaction Parser Utils', () => {
             cache.set('d', 4);
 
             expect(cache.get('a')).toBeNull();
+            expect(cache.head?.key).toBe('d');
+            expect(cache.tail?.key).toBe('b');
             expect(cache.get('b')).toBe(2);
             expect(cache.get('c')).toBe(3);
             expect(cache.get('d')).toBe(4);
@@ -205,25 +207,25 @@ describe('Transaction Parser Utils', () => {
             expect(cache.get('b')).toBeNull();
         });
 
-        // test('should handle complex sequence of operations', () => {
-        //     cache.set('a', 1);
-        //     cache.set('b', 2);
-        //     cache.get('a');
-        //     cache.set('c', 3);
-        //     cache.set('d', 4);
+        test('should handle complex sequence of operations', () => {
+            cache.set('a', 1);
+            cache.set('b', 2);
+            cache.get('a');
+            cache.set('c', 3);
+            cache.set('d', 4);
 
-        //     expect(cache.get('b')).toBeNull();
-        //     expect(cache.get('a')).toBe(1);
-        //     expect(cache.get('c')).toBe(3);
-        //     expect(cache.get('d')).toBe(4);
+            expect(cache.get('b')).toBeNull();
+            expect(cache.get('a')).toBe(1);
+            expect(cache.get('c')).toBe(3);
+            expect(cache.get('d')).toBe(4);
 
-        //     cache.set('e', 5);
+            cache.set('e', 5);
 
-        //     expect(cache.get('c')).toBeNull();
-        //     expect(cache.get('a')).toBe(1);
-        //     expect(cache.get('d')).toBe(4);
-        //     expect(cache.get('e')).toBe(5);
-        // });
+            expect(cache.get('a')).toBeNull();
+            expect(cache.get('c')).toBe(3);
+            expect(cache.get('d')).toBe(4);
+            expect(cache.get('e')).toBe(5);
+        });
     });
 
     describe('Raw Txn Test', () => {

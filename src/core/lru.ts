@@ -13,8 +13,8 @@ class LRUNode<V> {
 export class LRUCache<V> {
     private capacity: number;
     private cache: Map<string, LRUNode<V>>;
-    private head: LRUNode<V> | null = null;
-    private tail: LRUNode<V> | null = null;
+    head: LRUNode<V> | null = null;
+    tail: LRUNode<V> | null = null;
 
     constructor(capacity: number) {
         this.capacity = capacity;
