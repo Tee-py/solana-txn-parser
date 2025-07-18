@@ -1,6 +1,6 @@
 import { struct } from '@solana/buffer-layout';
 import { CreateEvent, TradeEvent, CompleteEvent } from './types';
-import { stringLayout, pubKey, uint64, boolean } from '../../core/layout';
+import { stringLayout, pubKey, uint64, boolean } from '../../core';
 
 export const CREATE_EVENT_LAYOUT = struct<CreateEvent>([
     stringLayout('name'),

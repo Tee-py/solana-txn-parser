@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { BaseParsedTransaction } from '../../core/base';
-import { BaseParsedAction } from '../../core/base';
+import { BaseParsedTransaction, BaseParsedAction } from '../../core';
 
 export const CREATE_EVENT_SIG = 'event:CreateEvent';
 export const COMPLETE_EVENT_SIG = 'event:CompleteEvent';

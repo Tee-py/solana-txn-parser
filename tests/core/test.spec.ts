@@ -1,7 +1,4 @@
 import {
-    clusterApiUrl,
-    Connection,
-    Message,
     ParsedTransactionWithMeta,
     PublicKey,
     TransactionResponse,
@@ -11,11 +8,9 @@ import fs from 'fs';
 import {
     getAccountSOLBalanceChange,
     flattenTransactionInstructions,
-    anchorLogScanner,
     parseRawTransaction,
-} from '../../src/core/utils';
+} from '../../src/core';
 import { LRUCache } from '../../src/core/lru';
-import { RaydiumV4Parser } from '../../src/parser/raydium';
 
 describe('Transaction Parser Utils', () => {
     describe('flattenTransactionInstructions', () => {
@@ -236,8 +231,12 @@ describe('Transaction Parser Utils', () => {
             const parsed = parseRawTransaction(rawTxn!);
 
             // verify number of cpi calls (inner instructions) and instructions
-            expect(parsed.meta.innerInstructions.length).toEqual(rawTxn.meta?.innerInstructions?.length)
-            expect(rawTxn.transaction.message.compiledInstructions.length).toEqual(parsed.transaction.message.instructions.length)
+            expect(parsed.meta.innerInstructions.length).toEqual(
+                rawTxn.meta?.innerInstructions?.length
+            );
+            expect(rawTxn.transaction.message.compiledInstructions.length).toEqual(
+                parsed.transaction.message.instructions.length
+            );
 
             // verify each individual inner instructions
             // expected ix according to (https://solscan.io/tx/jyEcdyKkZbZRu1CSqSu28CAPiAmZFtJ3DVejLkEhYVkZtsBrznXUAGfTGvvBmEcqmiS3bqYcY7cFEJgPhLQnP3b)
@@ -246,114 +245,116 @@ describe('Transaction Parser Utils', () => {
                     index: 3,
                     instructions: [
                         {
-                            programId: "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                            programId: '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',
                             accounts: [
-                                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-                                "N4UXh61ifRriJN9g8ZPCeNdyNy7EzCq3mW3iWNS6S2S",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-                                "E6UhcZ1LsMZdCQjzdgDUafrMTEcFoeDRyKb5HA828L7Q",
-                                "McJD2qeU3QXDysPNtbdZA6mNgK2XjdJbeNab8B7AZsZ",
-                                "A66RJVnjd3SwmPrr9aNSitGJzddarMNzTwrsYiFjdHo3",
-                                "FSKb18jroXxQFf4f18HYYwgzTZJmy7pNf8SBHLBY2KiP",
-                                "srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX",
-                                "DuU6qMpwHn329UoTcUZWbwGmBPgKzn2WpALuoisd4Zvx",
-                                "9S5a6eM2WTz2em6GK9zjrPB3Pfxsq9NVNe1E5YCCrDJP",
-                                "6DJtkQHQYFVF2hHBMDpZ7uzkWf8fUMKRVg6KNwkZ1VHp",
-                                "8GNnRiAKykFmFoKj84YChoCp89dwbwSyGMPyrswLU82Y",
-                                "CwSJDuoJvzdaiYdScjrJknu8zFDFSjkVR2E5UiggZyMg",
-                                "2aHXwtgZgpF73YC2o6snqBkthA4oeytVkHtUEZRmq1g1",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-                                "JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo",
-                                "2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE",
-                                "CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT"
+                                'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                                'N4UXh61ifRriJN9g8ZPCeNdyNy7EzCq3mW3iWNS6S2S',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+                                'E6UhcZ1LsMZdCQjzdgDUafrMTEcFoeDRyKb5HA828L7Q',
+                                'McJD2qeU3QXDysPNtbdZA6mNgK2XjdJbeNab8B7AZsZ',
+                                'A66RJVnjd3SwmPrr9aNSitGJzddarMNzTwrsYiFjdHo3',
+                                'FSKb18jroXxQFf4f18HYYwgzTZJmy7pNf8SBHLBY2KiP',
+                                'srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX',
+                                'DuU6qMpwHn329UoTcUZWbwGmBPgKzn2WpALuoisd4Zvx',
+                                '9S5a6eM2WTz2em6GK9zjrPB3Pfxsq9NVNe1E5YCCrDJP',
+                                '6DJtkQHQYFVF2hHBMDpZ7uzkWf8fUMKRVg6KNwkZ1VHp',
+                                '8GNnRiAKykFmFoKj84YChoCp89dwbwSyGMPyrswLU82Y',
+                                'CwSJDuoJvzdaiYdScjrJknu8zFDFSjkVR2E5UiggZyMg',
+                                '2aHXwtgZgpF73YC2o6snqBkthA4oeytVkHtUEZRmq1g1',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+                                'JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo',
+                                '2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE',
+                                'CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT',
                             ],
-                            data: "6FLPFmCQaXnUUaaMRwbKe1V"
+                            data: '6FLPFmCQaXnUUaaMRwbKe1V',
                         },
                         {
-                            programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                             accounts: [
-                                "JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo",
-                                "A66RJVnjd3SwmPrr9aNSitGJzddarMNzTwrsYiFjdHo3",
-                                "CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT"
+                                'JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo',
+                                'A66RJVnjd3SwmPrr9aNSitGJzddarMNzTwrsYiFjdHo3',
+                                'CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT',
                             ],
-                            data: "3gKBXWuhpDtj"
+                            data: '3gKBXWuhpDtj',
                         },
                         {
-                            programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                             accounts: [
-                                "FSKb18jroXxQFf4f18HYYwgzTZJmy7pNf8SBHLBY2KiP",
-                                "2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1"
+                                'FSKb18jroXxQFf4f18HYYwgzTZJmy7pNf8SBHLBY2KiP',
+                                '2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
                             ],
-                            data: "3iKybc46oGST"
+                            data: '3iKybc46oGST',
                         },
                         {
-                            programId: "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+                            programId: '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8',
                             accounts: [
-                                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-                                "DjQpzLq1yXsZ6SZt5MQP4yWgxRmL7RKMiu5VYoC8Usbv",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-                                "Boc5XtrQBFmBs8PnR9TGMJ9NE4XAhVwNeM2dqWkLJENa",
-                                "7qp5uThBtCqNwMTCz2Ynuw8LT7wS1MGSYFgMfWKK2Xsh",
-                                "HgBKpnGLreR6QNBrBwNUqExFddA6piV7yE8zMGsZbt4c",
-                                "2RVDdw8FGocF3ZaXDej5R7rBhJDoc8GDCT8EGd7suuSW",
-                                "srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX",
-                                "4WPAK8mGrFU4xqsdVVLZhn2kJ9L6xF4En225CUgLi1pB",
-                                "CTF2PKLDXpDRY1yx5R6dkTgtsNNqnbvinsC3QpQbAEA8",
-                                "9WrG9qG9nzBYEkeot7ZLdnxpmpPZNoby8jT5mjeUN6AC",
-                                "4r1H7AWXs5ZSMkrAM3gJ2CGpzqFXwjZiRQHfAJWuUX3u",
-                                "AgKAHLeGjEWycrfuRdEduL1gabAPayZrnhRdNxK1bpBq",
-                                "BDZhZ74xr74PQ1WmTL83uTUKo3baHtYBdMLWNtNpuTfL",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
-                                "2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE",
-                                "Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi",
-                                "HV1KXxWFaSeriyFvXyx48FqG9BoFbfinB8njCJonqP7K"
+                                'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                                'DjQpzLq1yXsZ6SZt5MQP4yWgxRmL7RKMiu5VYoC8Usbv',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+                                'Boc5XtrQBFmBs8PnR9TGMJ9NE4XAhVwNeM2dqWkLJENa',
+                                '7qp5uThBtCqNwMTCz2Ynuw8LT7wS1MGSYFgMfWKK2Xsh',
+                                'HgBKpnGLreR6QNBrBwNUqExFddA6piV7yE8zMGsZbt4c',
+                                '2RVDdw8FGocF3ZaXDej5R7rBhJDoc8GDCT8EGd7suuSW',
+                                'srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX',
+                                '4WPAK8mGrFU4xqsdVVLZhn2kJ9L6xF4En225CUgLi1pB',
+                                'CTF2PKLDXpDRY1yx5R6dkTgtsNNqnbvinsC3QpQbAEA8',
+                                '9WrG9qG9nzBYEkeot7ZLdnxpmpPZNoby8jT5mjeUN6AC',
+                                '4r1H7AWXs5ZSMkrAM3gJ2CGpzqFXwjZiRQHfAJWuUX3u',
+                                'AgKAHLeGjEWycrfuRdEduL1gabAPayZrnhRdNxK1bpBq',
+                                'BDZhZ74xr74PQ1WmTL83uTUKo3baHtYBdMLWNtNpuTfL',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
+                                '2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE',
+                                'Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi',
+                                'HV1KXxWFaSeriyFvXyx48FqG9BoFbfinB8njCJonqP7K',
                             ],
-                            data: "6GpcJsMFeTvFRRxUR2aoXQs"
+                            data: '6GpcJsMFeTvFRRxUR2aoXQs',
                         },
                         {
-                            programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                             accounts: [
-                                "2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE",
-                                "HgBKpnGLreR6QNBrBwNUqExFddA6piV7yE8zMGsZbt4c",
-                                "HV1KXxWFaSeriyFvXyx48FqG9BoFbfinB8njCJonqP7K"
+                                '2rikd7tzPbmowhUJzPNVtX7fuUGcnBa8jqJnx6HbtHeE',
+                                'HgBKpnGLreR6QNBrBwNUqExFddA6piV7yE8zMGsZbt4c',
+                                'HV1KXxWFaSeriyFvXyx48FqG9BoFbfinB8njCJonqP7K',
                             ],
-                            data: "3iKybc46oGST"
+                            data: '3iKybc46oGST',
                         },
                         {
-                            programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                             accounts: [
-                                "2RVDdw8FGocF3ZaXDej5R7rBhJDoc8GDCT8EGd7suuSW",
-                                "Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi",
-                                "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1"
+                                '2RVDdw8FGocF3ZaXDej5R7rBhJDoc8GDCT8EGd7suuSW',
+                                'Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi',
+                                '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1',
                             ],
-                            data: "3mcJFEBemvkX"
+                            data: '3mcJFEBemvkX',
                         },
                         {
-                            programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                            programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
                             accounts: [
-                                "JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo",
-                                "8c71AvjQeKKeWRe8jtTGG1bJ2WiYXQdbjqFbUfhHgSVk",
-                                "AoqP3HmYm5W2wJMny5PWQg8zbMS2VGTQ77r5SedHAf9M",
-                                "CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT"
+                                'JWt97sN73FfLv3rS6QEQH5ki9qje2sF3eGjyF6bTWMo',
+                                '8c71AvjQeKKeWRe8jtTGG1bJ2WiYXQdbjqFbUfhHgSVk',
+                                'AoqP3HmYm5W2wJMny5PWQg8zbMS2VGTQ77r5SedHAf9M',
+                                'CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT',
                             ],
-                            data: "hLL2Ls1hQcApx"
-                        }
+                            data: 'hLL2Ls1hQcApx',
+                        },
                     ],
                 },
             ];
             for (let i = 0; i < expectedInnerIxs.length; i++) {
-                const expectedInnerIx = expectedInnerIxs[i]
-                const parsedInnerIx = parsed.meta.innerInstructions[i]
-                expect(expectedInnerIx.index).toEqual(parsedInnerIx.index)
-                expect(expectedInnerIx.instructions.length).toEqual(parsedInnerIx.instructions.length)
+                const expectedInnerIx = expectedInnerIxs[i];
+                const parsedInnerIx = parsed.meta.innerInstructions[i];
+                expect(expectedInnerIx.index).toEqual(parsedInnerIx.index);
+                expect(expectedInnerIx.instructions.length).toEqual(
+                    parsedInnerIx.instructions.length
+                );
                 for (let k = 0; k < expectedInnerIx.instructions.length; k++) {
-                    const eIx = expectedInnerIx.instructions[k]
-                    const pIx = parsedInnerIx.instructions[k]
-                    expect(eIx.accounts.length).toEqual(pIx.accounts.length)
-                    expect(eIx.data).toEqual(pIx.data)
-                    for (let j = 0; j < eIx.accounts.length; j ++) {
-                        expect(eIx.accounts[j].toString()).toEqual(pIx.accounts[j].toString())
+                    const eIx = expectedInnerIx.instructions[k];
+                    const pIx = parsedInnerIx.instructions[k];
+                    expect(eIx.accounts.length).toEqual(pIx.accounts.length);
+                    expect(eIx.data).toEqual(pIx.data);
+                    for (let j = 0; j < eIx.accounts.length; j++) {
+                        expect(eIx.accounts[j].toString()).toEqual(pIx.accounts[j].toString());
                     }
                 }
             }
@@ -361,47 +362,51 @@ describe('Transaction Parser Utils', () => {
             // verify actual transaction instructions
             const expectedTransactionInstructions = [
                 {
-                    programId: "ComputeBudget111111111111111111111111111111",
-                    data: "E7Sc3y",
-                    accounts: []
+                    programId: 'ComputeBudget111111111111111111111111111111',
+                    data: 'E7Sc3y',
+                    accounts: [],
                 },
                 {
-                    programId: "ComputeBudget111111111111111111111111111111",
-                    data: "3sFdV3DXantP",
-                    accounts: []
+                    programId: 'ComputeBudget111111111111111111111111111111',
+                    data: '3sFdV3DXantP',
+                    accounts: [],
                 },
                 {
-                    programId: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
-                    data: "",
+                    programId: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+                    data: '',
                     accounts: [
-                        "CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT",
-                        "Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi",
-                        "CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT",
-                        "BfxhMerBkBhRUGn4tX5YrBRqLqN8VjvUXHhU7K9Fpump",
-                        "11111111111111111111111111111111",
-                        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-                    ]
+                        'CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT',
+                        'Ge3apdyTidx88bZjMZaXevvGvze1oxAJWewGYJ6DXGBi',
+                        'CiMyNyCrnHCgkcR39Vxv2LbXSjbdgL15PDwJds6ZaiPT',
+                        'BfxhMerBkBhRUGn4tX5YrBRqLqN8VjvUXHhU7K9Fpump',
+                        '11111111111111111111111111111111',
+                        'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                    ],
                 },
                 {
-                    programId: "6m2CDdhRgxpH4WjvdzxAYbGxwdGUz5MziiL5jek2kBma",
-                    data: "3oanNfRnEmjHSNqoG8cvGnC6D7gKDQa79Uy6Q8TTLm4gCbR71DS418KubN31gUHPYaN7Ln5jnGX37rtXYthaELjZVjDYRYSkvA7MpyMUWD5LTtw3mZ",
-                    accounts: []
+                    programId: '6m2CDdhRgxpH4WjvdzxAYbGxwdGUz5MziiL5jek2kBma',
+                    data: '3oanNfRnEmjHSNqoG8cvGnC6D7gKDQa79Uy6Q8TTLm4gCbR71DS418KubN31gUHPYaN7Ln5jnGX37rtXYthaELjZVjDYRYSkvA7MpyMUWD5LTtw3mZ',
+                    accounts: [],
                 },
-            ]
+            ];
             for (let i = 0; i < expectedTransactionInstructions.length; i++) {
-                const tIx = parsed.transaction.message.instructions[i]
-                const eIx = expectedTransactionInstructions[i]
-                expect(tIx.programId.toString()).toEqual(eIx.programId.toString())
+                const tIx = parsed.transaction.message.instructions[i];
+                const eIx = expectedTransactionInstructions[i];
+                expect(tIx.programId.toString()).toEqual(eIx.programId.toString());
             }
-        })
+        });
 
         test('raw legacy txn test', async () => {
             const rawTxn = JSON.parse(
                 fs.readFileSync('tests/core/raw-legacy.json', 'utf-8')
             ) as unknown as TransactionResponse;
             const parsed = parseRawTransaction(rawTxn!);
-            expect(parsed.meta.innerInstructions.length).toEqual(rawTxn.meta?.innerInstructions?.length)
-            expect(rawTxn.transaction.message.instructions.length).toEqual(parsed.transaction.message.instructions.length)
+            expect(parsed.meta.innerInstructions.length).toEqual(
+                rawTxn.meta?.innerInstructions?.length
+            );
+            expect(rawTxn.transaction.message.instructions.length).toEqual(
+                parsed.transaction.message.instructions.length
+            );
         });
     });
 });

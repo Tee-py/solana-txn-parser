@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { BaseParsedAction, BaseParsedTransaction } from '../../../core/base';
+import { BaseParsedAction, BaseParsedTransaction } from '../../../core';
 
 export const RayV4Program = new PublicKey('675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8');
 

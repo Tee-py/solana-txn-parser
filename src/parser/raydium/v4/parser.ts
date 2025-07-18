@@ -1,5 +1,4 @@
 import { Connection, ParsedTransactionWithMeta, PublicKey } from '@solana/web3.js';
-import { AsyncBaseParser } from '../../../core/base';
 import { LRUCache } from '../../../core/lru';
 import {
     ActionType,
@@ -25,7 +24,7 @@ import {
     SWAP_BASE_OUT_LAYOUT,
     WITHDRAW_LAYOUT,
 } from './layout';
-import { flattenTransactionInstructions } from '../../../core/utils';
+import { AsyncBaseParser, flattenTransactionInstructions } from '../../../core';
 
 export class RaydiumV4Parser implements AsyncBaseParser<RaydiumV4Transaction> {
     private poolInfoCache: LRUCache<PoolInfo>;

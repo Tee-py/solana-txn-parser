@@ -1,5 +1,5 @@
 import { struct, u8, blob } from '@solana/buffer-layout';
-import { pubKey, uint64, uint128 } from '../../../core/layout';
+import { pubKey, uint64, uint128 } from '../../../core';
 import { InitPool, Deposit, Withdraw, SwapBaseIn, SwapBaseOut, PoolInfo } from './types';
 
 export const INIT_POOL_LAYOUT = struct<InitPool>([

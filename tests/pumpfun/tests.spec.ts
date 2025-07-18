@@ -2,6 +2,7 @@ import { ParsedTransactionWithMeta } from '@solana/web3.js';
 import { PumpFunParser } from '../../src';
 import fs from 'fs';
 import { CompleteInfo, CreateInfo, TradeInfo } from '../../src/parser/pumpfun/types';
+
 describe('PumpFunParser', () => {
     const buyTransaction = JSON.parse(
         fs.readFileSync('tests/pumpfun/parsed-buy-txn.json', 'utf-8')
