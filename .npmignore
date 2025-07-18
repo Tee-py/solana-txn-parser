@@ -11,3 +11,5 @@ jest.config.js
 .prettierignore
 *.tsbuildinfo
 package-test/
+DEPLOYMENT.md
+tsup.config.ts

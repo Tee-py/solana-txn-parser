@@ -14,7 +14,6 @@
     "skipLibCheck": true,
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
-    "composite": true,
     "declarationDir": "./dist/types"
   },
   "include": ["src/**/*"],

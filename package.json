@@ -1,17 +1,15 @@
 {
   "name": "solana-parser",
-  "version": "0.1.5",
-  "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "version": "0.1.6",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && tsc && rm tsconfig.tsbuildinfo",
-    "build:types": "tsc --emitDeclarationOnly",
+    "build": "tsup",
     "test": "jest",
     "format": "prettier --write \"src/**/*.ts\" && prettier --write \"tests/**/*.ts\" && prettier --write \"tests/**/*.json\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
@@ -26,7 +24,9 @@
   },
   "typesVersions": {
     "*": {
-      "*": ["dist/types/*"]
+      "*": [
+        "dist/types/*"
+      ]
     }
   },
   "jest": {
@@ -72,6 +72,7 @@
     "prettier": "^3.3.3",
     "rimraf": "^5.0.10",
     "ts-jest": "^29.2.5",
+    "tsup": "^8.5.0",
     "typescript": "^5.7.3"
   }
 }
